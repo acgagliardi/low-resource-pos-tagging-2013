@@ -196,6 +196,14 @@ object Train {
       val rawTokenTagDistsWithDefaults = addDefaultsForEmptyNodes(rawTokenTagDists, initialTagDict, fullTagSet)
       (binaryExpandedTagDict, rawTokenTagDistsWithDefaults)
     })
+// THIS IS THE WRONG PLACE FOR THIS - WORKS HERE BUT NEED TO FIND OUT WHERE TO PUT IT SO IT WILL BE IN THE RIGHT PLACE AND KEEP WORKING
+def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
+  val p = new java.io.PrintWriter(f)
+  try { op(p) } finally { p.close() }
+}
+
+import java.io._
+printToFile(new File("rawTokenTagDistsWithDefaults.txt")) {p => rawTokenTagDistsWithDefaults.foreach(p.println)}
 
     val noisyLabeledRawCorpus =
       if (useModelMin) time("Finished model minimization", minimize(rawTokenTagDistsWithDefaults, taggedSentences))
