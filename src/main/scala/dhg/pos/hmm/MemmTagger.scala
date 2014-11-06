@@ -65,6 +65,19 @@ case class MemmTagger[Sym, Tag](model: POSModel, meTagger: POSTaggerME) {
   def tagSequence(sequence: Vector[Sym]): Vector[(String, String)] = {
     val syms = sequence.map(_.toString)
     val tags = meTagger.tag(syms.toArray)
+    val probs = meTagger.topKSequences(syms.toArray)
+
+// THIS IS THE WRONG PLACE FOR THIS - WORKS HERE BUT NEED TO FIND OUT WHERE TO PUT IT SO IT WILL BE IN THE RIGHT PLACE AND KEEP WORKING
+def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
+  val p = new java.io.PrintWriter(f)
+  try { op(p) } finally { p.close() }
+}
+
+import java.io._
+
+    printToFile(new File("memmProbs.txt")) {p =>p.println(s"\nSENT ${syms.toList} PROB ${probs.toList}")}
+    println(s"\nSENT ${syms.toList} PROB ${probs.toList}")
+    // println(s"XXXXXXXXXXXXXXx ${probs.toList}")
     syms zipSafe tags
   }
 
@@ -72,6 +85,7 @@ case class MemmTagger[Sym, Tag](model: POSModel, meTagger: POSTaggerME) {
     sequences.map(tagSequence)
   }
 }
+
 
 object MemmTagger {
 
