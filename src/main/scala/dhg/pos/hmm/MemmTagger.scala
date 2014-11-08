@@ -67,17 +67,20 @@ case class MemmTagger[Sym, Tag](model: POSModel, meTagger: POSTaggerME) {
     val tags = meTagger.tag(syms.toArray)
     val probs = meTagger.topKSequences(syms.toArray)
 
-// THIS IS THE WRONG PLACE FOR THIS - WORKS HERE BUT NEED TO FIND OUT WHERE TO PUT IT SO IT WILL BE IN THE RIGHT PLACE AND KEEP WORKING
+// THIS IS THE WRONG PLACE FOR THIS - WORKS HERE BUT NEED TO FIND OUT WHERE TO PUT IT SO IT WILL BE IN THE RIGHT PLACE 
+// AND KEEP WORKING
+
+import java.io.FileWriter
+
 def printToFile(f: java.io.File)(op: java.io.PrintWriter => Unit) {
-  val p = new java.io.PrintWriter(f)
+  val p = new java.io.PrintWriter(new FileWriter(f, true))
   try { op(p) } finally { p.close() }
 }
 
 import java.io._
 
-    printToFile(new File("memmProbs.txt")) {p =>p.println(s"\nSENT ${syms.toList} PROB ${probs.toList}")}
-    println(s"\nSENT ${syms.toList} PROB ${probs.toList}")
-    // println(s"XXXXXXXXXXXXXXx ${probs.toList}")
+    printToFile(new File("memmProbs.txt")) {p =>p.println(s"SENT ${syms.toList} PROB ${probs.toList}")}
+
     syms zipSafe tags
   }
 
